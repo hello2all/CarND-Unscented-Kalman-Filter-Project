@@ -1,3 +1,4 @@
+include(CMakeToolsHelpers OPTIONAL)
 project(UnscentedKF)
 
 cmake_minimum_required (VERSION 3.5)
@@ -10,3 +11,6 @@ set(sources
    src/tools.cpp)
 
 add_executable(UnscentedKF ${sources})
+
+#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
+#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall")

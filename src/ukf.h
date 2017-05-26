@@ -17,6 +17,9 @@ public:
   ///* initially set to false, set to true in first call of ProcessMeasurement
   bool is_initialized_;
 
+  ///* previous time stamp
+  double previous_timestamp_;
+
   ///* if this is false, laser measurements will be ignored (except for init)
   bool use_laser_;
 
@@ -31,6 +34,9 @@ public:
 
   ///* predicted sigma points matrix
   MatrixXd Xsig_pred_;
+
+  ///* predicted measurement sigma points matrix
+  MatrixXd Zsig_;
 
   ///* time when the state is true, in us
   long long time_us_;
@@ -65,14 +71,29 @@ public:
   ///* Augmented state dimension
   int n_aug_;
 
+  // Lidar measurement dimension
+  int n_z_laser_;
+
+  // Radar measurement dimension
+  int n_z_radar_;
+
+  // Measurement dimension;
+  int n_z_;
+
   ///* Sigma point spreading parameter
   double lambda_;
+
+  ///* Augmented state vector
+  VectorXd x_aug_;
 
   ///* the current NIS for radar
   double NIS_radar_;
 
   ///* the current NIS for laser
   double NIS_laser_;
+
+  // Tools
+  Tools tools;
 
   /**
    * Constructor
@@ -83,6 +104,12 @@ public:
    * Destructor
    */
   virtual ~UKF();
+
+  /**
+  * Init
+  */
+  void Init(Eigen::VectorXd &x_in, Eigen::MatrixXd &P_in, Eigen::MatrixXd &F_in,
+    Eigen::MatrixXd &H_in, Eigen::MatrixXd &R_laser_in, Eigen::MatrixXd &R_radar_in, Eigen::MatrixXd &Q_in);
 
   /**
    * ProcessMeasurement
@@ -101,13 +128,23 @@ public:
    * Updates the state and the state covariance matrix using a laser measurement
    * @param meas_package The measurement at k+1
    */
-  void UpdateLidar(MeasurementPackage meas_package);
+  float UpdateLidar(MeasurementPackage meas_package);
 
   /**
    * Updates the state and the state covariance matrix using a radar measurement
    * @param meas_package The measurement at k+1
    */
-  void UpdateRadar(MeasurementPackage meas_package);
+  float UpdateRadar(MeasurementPackage meas_package);
+
+  Eigen::MatrixXd AugmentedSigmaPoints(Eigen::VectorXd x, Eigen::MatrixXd P);
+
+  Eigen::MatrixXd SigmaPointPrediction(MatrixXd Xsig_in, double delta_t);
+  void PredictMeanAndCovariance(Eigen::VectorXd* x_out, Eigen::MatrixXd* P_out);
+  Eigen::MatrixXd PredictRadarMeasurement(VectorXd* z_out, MatrixXd* S_out);
+  Eigen::MatrixXd PredictLidarMeasurement(VectorXd* z_out, MatrixXd* S_out);
+  void LidarUpdateState(Eigen::VectorXd z, Eigen::VectorXd z_pred, Eigen::MatrixXd S, Eigen::MatrixXd Zsig);
+  void RadarUpdateState(Eigen::VectorXd z, Eigen::VectorXd z_pred, Eigen::MatrixXd S, Eigen::MatrixXd Zsig);
+
 };
 
 #endif /* UKF_H */
