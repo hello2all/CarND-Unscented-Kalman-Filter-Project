@@ -62,37 +62,37 @@ UKF::UKF() {
   */
 
   // State dimension
-  int n_x_ = 5;
+  n_x_ = 5;
 
   // Augmented state dimension
-  int n_aug_ = 7;
+  n_aug_ = 7;
 
   // Lidar measurement dimension
-  int n_z_laser_ = 2;
+  n_z_laser_ = 2;
 
   // Radar measurement dimension
-  int n_z_radar_ = 3;
+  n_z_radar_ = 3;
 
   // Measurement dimension;
-  int n_z_ = n_z_laser_;
+  n_z_ = n_z_laser_;
 
   // Sigma point spreading parameter
-  double lambda_ =  3 - n_aug_;
+  lambda_ =  3 - n_aug_;
 
   // initial augmented state vector
   x_aug_ = VectorXd(n_aug_);
 
   // Predicted sigma points
-  MatrixXd Xsig_pred_ = MatrixXd(n_x_, 2 * n_aug_ + 1);
+  Xsig_pred_ = MatrixXd(n_x_, 2 * n_aug_ + 1);
 
   // Weights of sigma points
-  VectorXd weights_ = VectorXd(2*n_aug_+1);
+  weights_ = VectorXd(2*n_aug_+1);
 
   // the current NIS for radar
-  double NIS_radar_;
+  NIS_radar_ = 0;
 
   // the current NIS for laser
-  double NIS_laser_;
+  NIS_laser_ = 0;
 }
 
 UKF::~UKF() {}
@@ -118,7 +118,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       /**
       Initialize state.
       */
-      x_ << meas_package.raw_measurements_[0], meas_package.raw_measurements_[1], 0, 0;
+      x_ << meas_package.raw_measurements_(0), meas_package.raw_measurements_(1), 0, 0, 0;
     }
 
     is_initialized_ = true;
@@ -213,14 +213,14 @@ float UKF::UpdateRadar(MeasurementPackage meas_package) {
 MatrixXd UKF::AugmentedSigmaPoints(VectorXd x, MatrixXd P) {
 
   //create augmented mean vector
-  VectorXd x_aug = VectorXd(n_x_);
+  VectorXd x_aug = VectorXd(n_aug_);
 
   //create augmented state covariance
   MatrixXd P_aug = MatrixXd(n_aug_, n_aug_);
 
   //create sigma point matrix
   MatrixXd Xsig_aug = MatrixXd(n_aug_, 2 * n_aug_ + 1);
- 
+
   //create augmented mean state
   x_aug.head(n_x_) = x;
   x_aug(5) = 0;
@@ -254,7 +254,7 @@ MatrixXd UKF::AugmentedSigmaPoints(VectorXd x, MatrixXd P) {
 MatrixXd UKF::SigmaPointPrediction(MatrixXd Xsig_in, double delta_t) {
 
   //create matrix with predicted sigma points as columns
-  MatrixXd Xsig_pred = MatrixXd(n_x_, 2 * n_aug_ + 1);
+  // MatrixXd Xsig_pred = MatrixXd(n_x_, 2 * n_aug_ + 1);
 
   //predict sigma points
   for (int i = 0; i< 2*n_aug_+1; i++)
@@ -294,6 +294,9 @@ MatrixXd UKF::SigmaPointPrediction(MatrixXd Xsig_in, double delta_t) {
     yawd_p = yawd_p + nu_yawdd*delta_t;
 
     //write predicted sigma point into right column
+    cout << px_p << endl;
+    cout << Xsig_pred_ << endl;
+
     Xsig_pred_(0,i) = px_p;
     Xsig_pred_(1,i) = py_p;
     Xsig_pred_(2,i) = v_p;
