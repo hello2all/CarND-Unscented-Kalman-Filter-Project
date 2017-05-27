@@ -32,6 +32,9 @@ public:
   ///* state covariance matrix
   MatrixXd P_;
 
+  ///* measurement matrix for lidar
+  MatrixXd H_;
+
   ///* predicted sigma points matrix
   MatrixXd Xsig_pred_;
 
@@ -42,46 +45,52 @@ public:
   long long time_us_;
 
   ///* Process noise standard deviation longitudinal acceleration in m/s^2
-  double std_a_;
+  const double std_a_ = 3;
 
   ///* Process noise standard deviation yaw acceleration in rad/s^2
-  double std_yawdd_;
+  const double std_yawdd_ = 3.14 / 16;
 
   ///* Laser measurement noise standard deviation position1 in m
-  double std_laspx_;
+  const double std_laspx_ = 0.15;
 
   ///* Laser measurement noise standard deviation position2 in m
-  double std_laspy_;
+  const double std_laspy_ = 0.15;
 
   ///* Radar measurement noise standard deviation radius in m
-  double std_radr_;
+  const double std_radr_ = 0.3;
 
   ///* Radar measurement noise standard deviation angle in rad
-  double std_radphi_;
+  const double std_radphi_ = 0.03;
 
   ///* Radar measurement noise standard deviation radius change in m/s
-  double std_radrd_ ;
+  const double std_radrd_ = 0.3;
+
+  // Lidar measurement noise covariant matrix
+  MatrixXd R_laser_;
+
+  // Radar measurement noise covariant matrix
+  MatrixXd R_radar_;
 
   ///* Weights of sigma points
   VectorXd weights_;
 
   ///* State dimension
-  int n_x_;
+  const int n_x_ = 5;
 
   ///* Augmented state dimension
-  int n_aug_;
+  const int n_aug_ = 7;
 
   // Lidar measurement dimension
-  int n_z_laser_;
+  const int n_z_laser_ = 2;
 
   // Radar measurement dimension
-  int n_z_radar_;
+  const int n_z_radar_ = 3;
 
   // Measurement dimension;
   int n_z_;
 
   ///* Sigma point spreading parameter
-  double lambda_;
+  const double lambda_ = 3 - n_aug_;
 
   ///* Augmented state vector
   VectorXd x_aug_;
@@ -144,7 +153,6 @@ public:
   Eigen::MatrixXd PredictLidarMeasurement(VectorXd* z_out, MatrixXd* S_out);
   void LidarUpdateState(Eigen::VectorXd z, Eigen::VectorXd z_pred, Eigen::MatrixXd S, Eigen::MatrixXd Zsig);
   void RadarUpdateState(Eigen::VectorXd z, Eigen::VectorXd z_pred, Eigen::MatrixXd S, Eigen::MatrixXd Zsig);
-
 };
 
 #endif /* UKF_H */

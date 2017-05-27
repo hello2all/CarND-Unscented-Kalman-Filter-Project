@@ -63,3 +63,15 @@ float Tools::NIS(const Eigen::VectorXd &z, const Eigen::VectorXd &z_1, const Eig
   Eigen::VectorXd diff = z_1 - z;
   return diff.transpose() * Si * diff;
 }
+
+double Tools::Normalize(double angle){
+
+  if(angle > M_PI){
+    angle = (int(angle - M_PI)%int(2*M_PI)) - M_PI;
+  }
+  if(angle < -M_PI){
+    angle = (int(angle + M_PI)%int(2*M_PI)) + M_PI;
+  }
+
+  return angle;
+}

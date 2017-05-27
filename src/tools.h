@@ -23,6 +23,7 @@ public:
   Eigen::VectorXd Polar2Cartesian(const Eigen::VectorXd &z);
   // Calc NIS
   float NIS(const Eigen::VectorXd &z, const Eigen::VectorXd &z_1, const Eigen::MatrixXd &Si);
+  double Normalize(double angle);
 
 };
 
